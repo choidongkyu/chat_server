@@ -12,6 +12,7 @@ import java.util.List;
 public class ChatServerProcessThread extends Thread {
 	private String nickname = null;
 	private Socket socket = null;
+	private String JOIN_KEY = "cfc3cf70-c9fc-11eb-9345-0800200c9a66";
 	List<PrintWriter> listWriters = null;
 
 	public ChatServerProcessThread(Socket socket, List<PrintWriter> listWriters) {
@@ -32,12 +33,11 @@ public class ChatServerProcessThread extends Thread {
 				String request = buffereedReader.readLine();
 
 				if (request == null) {
-					consoleLog("클라이언트로부터 연결 끊김");
-					doQuit(printWriter);
+					disconnectClient(printWriter);
 					break;
 				}
 
-				String[] tokens = request.split(":");
+				String[] tokens = request.split("::");
 				if ("join".equals(tokens[0])) {
 					doJoin(tokens[1], printWriter);
 				} else if ("message".equals(tokens[0])) {
@@ -54,8 +54,14 @@ public class ChatServerProcessThread extends Thread {
 	private void doQuit(PrintWriter writer) {
 		removeWriter(writer);
 
-		String data = this.nickname + "님이 퇴장했습니다.";
+		String data = JOIN_KEY + this.nickname + "님이 퇴장했습니다.";
+		consoleLog(data);
 		broadcast(data);
+	}
+	
+	private void disconnectClient(PrintWriter writer) {
+		consoleLog("클라이언트로부터 연결 끊김");
+		removeWriter(writer);
 	}
 
 	private void removeWriter(PrintWriter writer) {
@@ -65,15 +71,16 @@ public class ChatServerProcessThread extends Thread {
 	}
 
 	private void doMessage(String data) {
-		broadcast(this.nickname + ":" + data);
+		consoleLog(data);
+		broadcast(data);
 	}
 
 	private void doJoin(String nickname, PrintWriter writer) {
 		this.nickname = nickname;
 
-		String data = nickname + "님이 입장하였습니다.";
+		String data = JOIN_KEY + nickname + "님이 입장하였습니다.";
 		broadcast(data);
-
+		consoleLog(data);
 		// writer pool에 저장
 		addWriter(writer);
 	}

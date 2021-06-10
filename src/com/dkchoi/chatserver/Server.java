@@ -11,17 +11,18 @@ import java.util.List;
 
 public class Server {
 	public static void main(String[] args) {
-		final int SERVER_PORT = 5001;
+		final int SERVER_PORT = 5002;
 		ServerSocket serverSocket = null;
 		List<PrintWriter> listWriters = new ArrayList<PrintWriter>();
 
 		try {
 			// 1. 서버 소켓 생성
-			serverSocket = new ServerSocket();
+			//serverSocket = new ServerSocket();
 
 			// 2. 바인딩
 			String hostAddress = InetAddress.getLocalHost().getHostAddress();
-			serverSocket.bind(new InetSocketAddress(hostAddress, SERVER_PORT));
+			//serverSocket.bind(new InetSocketAddress(hostAddress, SERVER_PORT));
+			serverSocket = new ServerSocket(SERVER_PORT);
 			consoleLog("연결 기다림 - " + hostAddress + ":" + SERVER_PORT);
 
 			// 3. 요청 대기
