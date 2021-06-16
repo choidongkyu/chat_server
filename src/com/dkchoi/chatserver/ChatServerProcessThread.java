@@ -14,6 +14,8 @@ public class ChatServerProcessThread extends Thread {
 	private Socket socket = null;
 	private String JOIN_KEY = "cfc3cf70-c9fc-11eb-9345-0800200c9a66";
 	List<PrintWriter> listWriters = null;
+	
+	private boolean running = true;
 
 	public ChatServerProcessThread(Socket socket, List<PrintWriter> listWriters) {
 		this.socket = socket;
@@ -29,7 +31,7 @@ public class ChatServerProcessThread extends Thread {
 			PrintWriter printWriter = new PrintWriter(
 					new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
 
-			while (true) {
+			while (running) {
 				String request = buffereedReader.readLine();
 
 				if (request == null) {
@@ -53,10 +55,10 @@ public class ChatServerProcessThread extends Thread {
 
 	private void doQuit(PrintWriter writer) {
 		removeWriter(writer);
-
 		String data = JOIN_KEY + this.nickname + "님이 퇴장했습니다.";
 		consoleLog(data);
 		broadcast(data);
+		running = false; // 쓰레드 종료
 	}
 	
 	private void disconnectClient(PrintWriter writer) {
