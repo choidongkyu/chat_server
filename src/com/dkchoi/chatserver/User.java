@@ -1,27 +1,16 @@
 package com.dkchoi.chatserver;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class User {
+	private String id;
 	private String name;
-	private Socket socket;
 	private PrintWriter printWriter;
 
-	public User(String name, Socket socket) {
+	public User(String name, String id, PrintWriter printWriter) {
 		this.name = name;
-		this.socket = socket;
-		try {
-			this.printWriter = new PrintWriter(
-					new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		
+		this.printWriter = printWriter;
+
 	}
 
 	public String getName() {
@@ -32,12 +21,13 @@ public class User {
 		this.name = name;
 	}
 
-	public Socket getSocket() {
-		return socket;
+
+	public String getId() {
+		return id;
 	}
 
-	public void setSocket(Socket socket) {
-		this.socket = socket;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public PrintWriter getPrintWriter() {

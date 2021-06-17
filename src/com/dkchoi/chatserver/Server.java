@@ -13,7 +13,9 @@ public class Server {
 	public static void main(String[] args) {
 		final int SERVER_PORT = 5002;
 		ServerSocket serverSocket = null;
-		List<PrintWriter> listWriters = new ArrayList<PrintWriter>();
+		
+		RoomManager roomManager = RoomManager.getInstance(); //room 매니저 객체 생성
+		
 
 		try {
 			// 1. 서버 소켓 생성
@@ -28,7 +30,7 @@ public class Server {
 			// 3. 요청 대기
 			while (true) {
 				Socket socket = serverSocket.accept();
-				new ChatServerProcessThread(socket, listWriters).start();
+				new ChatServerProcessThread(socket).start();
 			}
 
 		} catch (

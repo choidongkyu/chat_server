@@ -10,16 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ChatServerProcessThread extends Thread {
-	private String nickname = null;
 	private Socket socket = null;
 	private String JOIN_KEY = "cfc3cf70-c9fc-11eb-9345-0800200c9a66";
-	List<PrintWriter> listWriters = null;
-	
+	private User user = null;
 	private boolean running = true;
 
-	public ChatServerProcessThread(Socket socket, List<PrintWriter> listWriters) {
+	public ChatServerProcessThread(Socket socket) {
 		this.socket = socket;
-		this.listWriters = listWriters;
 	}
 
 	@Override
@@ -40,27 +37,26 @@ public class ChatServerProcessThread extends Thread {
 				}
 
 				String[] tokens = request.split("::");
-				if ("join".equals(tokens[0])) {
-					doJoin(tokens[1], printWriter);
+				if ("join".equals(tokens[0])) { // 앱 진입시 소켓 연결되는 시점
+					this.user = new User(tokens[1], tokens[2], printWriter); //들어오는 메시지 예시 - "join::최동규::+821026595819"
+					UserManager.getInstance().addUser(user); // 접속중인 유저이므로 add user
 				} else if ("message".equals(tokens[0])) {
 					doMessage(tokens[1]);
 				} else if ("quit".equals(tokens[0])) {
-					doQuit(printWriter);
+					doQuit(user);
 				}
 			}
 		} catch (IOException e) {
-			consoleLog(this.nickname + "님이 채팅방을 나갔습니다.");
+			e.printStackTrace();
 		}
 	}
 
-	private void doQuit(PrintWriter writer) {
-		removeWriter(writer);
-		String data = JOIN_KEY + this.nickname + "님이 퇴장했습니다.";
-		consoleLog(data);
-		broadcast(data);
+	private void doQuit(User user) {
+		UserManager.getInstance().removeUser(user);
+		this.user = null;
 		running = false; // 쓰레드 종료
 	}
-	
+
 	private void disconnectClient(PrintWriter writer) {
 		consoleLog("클라이언트로부터 연결 끊김");
 		removeWriter(writer);
@@ -77,7 +73,7 @@ public class ChatServerProcessThread extends Thread {
 		broadcast(data);
 	}
 
-	private void doJoin(String nickname, PrintWriter writer) {
+	private void doJoin(User user) {
 		this.nickname = nickname;
 
 		String data = JOIN_KEY + nickname + "님이 입장하였습니다.";
