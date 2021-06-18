@@ -57,6 +57,11 @@ public class ChatServerProcessThread extends Thread {
 		this.user = null;
 		running = false; // 쓰레드 종료
 	}
+	
+//	private void exitRoom(String roomName) {
+//		Room room = RoomManager.getInstance().getRoom(roomName);
+//		room.exitRoom(user);
+//	}
 
 	private void disconnectClient(User user) {
 		consoleLog("클라이언트로부터 연결 끊김");
@@ -67,7 +72,7 @@ public class ChatServerProcessThread extends Thread {
 		this.user = user; // 멤버변수에 유저 객체 저장
 		UserManager.getInstance().addUser(user); // 접속중인 유저이므로 add user
 		//존재했던 기존 방이 있는지 확인
-		ArrayList<Room> rooms = RoomManager.getInstance().getRoomByUser(user); //존재하는 방 list 구함
+		ArrayList<Room> rooms = RoomManager.getInstance().getRoomByUser(user); //자신이 존재하는 방 list 구함
 		if(rooms.size() != 0) { // 존재한 room이 존재한다면
 			for(Room room : rooms) {
 				room.addUser(user); // 방에 user 추가

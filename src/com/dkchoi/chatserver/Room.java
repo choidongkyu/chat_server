@@ -32,17 +32,23 @@ public class Room {
 	}
 	
 	public void addUser(User user) {
-		this.userList.add(user);
+		synchronized (userList) {
+			this.userList.add(user);
+		}
 	}
 	
 	public void removeUser(User user) {
-		this.userList.remove(user);
+		synchronized (userList) {
+			this.userList.remove(user);
+		}
 	}
 
 	public void joinRoom(User user) {
-		String data = JOIN_KEY + user.getName() + "님이 입장하였습니다.";
-		broadcast(data);
-		this.userList.add(user);
+		synchronized (userList) {
+			String data = JOIN_KEY + user.getName() + "님이 입장하였습니다.";
+			broadcast(data);
+			this.userList.add(user);
+		}
 	}
 
 	public void exitRoom(User user) {
