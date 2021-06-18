@@ -15,6 +15,8 @@ public class Server {
 		ServerSocket serverSocket = null;
 		
 		RoomManager roomManager = RoomManager.getInstance(); //room 매니저 객체 생성
+		UserManager userManager = UserManager.getInstance(); //user 매니저 객체 생성
+		
 		
 
 		try {
