@@ -9,6 +9,7 @@ public class User {
 
 	public User(String name, String id, PrintWriter printWriter) {
 		this.name = name;
+		this.id = id;
 		this.printWriter = printWriter;
 
 	}

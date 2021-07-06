@@ -22,9 +22,12 @@ public class RoomManager {
 
 	public void createRoom(String name) {
 		if (!roomList.containsKey(name)) { // 기존에 방이 존재하지 않을때만 room 생성
+			System.out.println("기존 방이 존재하지 않아 룸생성");
 			synchronized (roomList) {
 				roomList.put(name, new Room(name));
 			}
+		}else {
+			System.out.println("기존 방이 존재하므로 룸생성하지 않음");
 		}
 	}
 
@@ -35,7 +38,9 @@ public class RoomManager {
 	}
 
 	public Room getRoom(String name) {
-		return roomList.get(name);
+		synchronized (roomList) {
+			return roomList.get(name);
+		}
 	}
 	
 	public ArrayList<Room> getRoomByUser(User user) {// user id가 포함된 room이 있는지 조회, 없다면 빈 array 반환
