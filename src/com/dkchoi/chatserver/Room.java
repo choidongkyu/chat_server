@@ -17,9 +17,30 @@ public class Room {
 		for (int i = 0; i < users.length; ++i) {
 			User user = UserManager.getInstance().getUser(users[i]); // 접속해 있는 유저인지 확인
 			if (user != null) { // 접속해있는 유저라면
-				System.out.println("add user - "+user.getId());
+				System.out.println("add user - " + user.getId());
 				this.userList.add(user); // room에 user 추가
 			}
+		}
+	}
+
+	public Room(String name, String inviteUserId, String fromName, String userJson) {
+		this.name = name;
+		this.userList = new ArrayList<>();
+		String[] users = name.split(","); // room name 예시 - "+821026595819,+821093230128" 이므로 , 를 기준으로 split 하여 나눠줌
+		User inviteUser = UserManager.getInstance().getUser(inviteUserId);
+		for (int i = 0; i < users.length; ++i) {
+			User user = UserManager.getInstance().getUser(users[i]); // 접속해 있는 유저인지 확인
+			if (user != null) { // 접속해있는 유저라면
+				if (user.getId().equals(inviteUserId)) { // invite user는 추후 joinRoom으로 add되기 때문에 제외
+					continue;
+				}
+				System.out.println("add user - " + user.getId());
+				this.userList.add(user); // room에 user 추가
+			}
+		}
+
+		if (inviteUser != null) {
+			joinRoom(inviteUser, fromName, userJson);
 		}
 	}
 
@@ -43,9 +64,9 @@ public class Room {
 		}
 	}
 
-	public void joinRoom(User user) {
+	public void joinRoom(User user, String fromName, String userJson) {
 		synchronized (userList) {
-			String data = JOIN_KEY + user.getName() + "님이 입장하였습니다.";
+			String data = JOIN_KEY + fromName + "님이 " + user.getName() + "님을 초대하였습니다.::"+userJson;
 			broadcast(data);
 			this.userList.add(user);
 		}
@@ -61,10 +82,10 @@ public class Room {
 
 	// 룸에 있는 모든 유저에게 메시지 보냄
 	public void broadcast(String data) {
-		System.out.println("broadcast data = "+data);
+		System.out.println("broadcast data = " + data);
 		synchronized (userList) {
 			for (User user : userList) {
-				System.out.println(user.getName()+"에게 메시지 보냄");
+				System.out.println(user.getName() + "에게 메시지 보냄");
 				user.getPrintWriter().println(data);
 				user.getPrintWriter().flush();
 			}

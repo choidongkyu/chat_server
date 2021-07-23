@@ -26,8 +26,23 @@ public class RoomManager {
 			synchronized (roomList) {
 				roomList.put(name, new Room(name));
 			}
-		}else {
+		} else {
 			System.out.println("기존 방이 존재하므로 룸생성하지 않음");
+		}
+	}
+
+	public void inviteRoom(String name, String inviteUserId, String fromName, String userJson) {
+		synchronized (roomList) {
+			if (!roomList.containsKey(name)) { // 기존에 방이 존재하지 않을때만 room 생성
+				System.out.println("기존 방이 존재하지 않아 룸생성 후 초대");
+				roomList.put(name, new Room(name, inviteUserId, fromName, userJson));
+			} else {
+				System.out.println("기존 방이 존재하므로 룸생성하지 않고 초대 " + inviteUserId);
+				User user = UserManager.getInstance().getUser(inviteUserId);
+				if(user != null) {
+					roomList.get(name).joinRoom(user, fromName, userJson);
+				}
+			}
 		}
 	}
 
@@ -42,13 +57,13 @@ public class RoomManager {
 			return roomList.get(name);
 		}
 	}
-	
+
 	public ArrayList<Room> getRoomByUser(User user) {// user id가 포함된 room이 있는지 조회, 없다면 빈 array 반환
 		ArrayList<Room> result = new ArrayList<>();
-		for(String roomName : roomList.keySet()) {
+		for (String roomName : roomList.keySet()) {
 			String[] userId = roomName.split(",");
-			if(Arrays.stream(userId).anyMatch(user.getId()::equals)) { //배열에 찾고자하는 id가 있다면 즉 해당 아이디 포함된 room이 있다면
-				result.add(RoomManager.getInstance().getRoom(roomName));  //room 추가
+			if (Arrays.stream(userId).anyMatch(user.getId()::equals)) { // 배열에 찾고자하는 id가 있다면 즉 해당 아이디 포함된 room이 있다면
+				result.add(RoomManager.getInstance().getRoom(roomName)); // room 추가
 			}
 		}
 		return result;
