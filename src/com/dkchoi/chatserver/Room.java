@@ -23,7 +23,7 @@ public class Room {
 		}
 	}
 
-	public Room(String name, String inviteUserId, String fromName, String userJson) {
+	public Room(String name, String inviteUserId, String messageData, String userJson) {
 		this.name = name;
 		this.userList = new ArrayList<>();
 		String[] users = name.split(","); // room name 예시 - "+821026595819,+821093230128" 이므로 , 를 기준으로 split 하여 나눠줌
@@ -40,7 +40,7 @@ public class Room {
 		}
 
 		if (inviteUser != null) {
-			joinRoom(inviteUser, fromName, userJson);
+			joinRoom(inviteUser, messageData, userJson);
 		}
 	}
 
@@ -64,10 +64,9 @@ public class Room {
 		}
 	}
 
-	public void joinRoom(User user, String fromName, String userJson) {
+	public void joinRoom(User user, String messageData, String userJson) {
 		synchronized (userList) {
-			String data = JOIN_KEY + fromName + "님이 " + user.getName() + "님을 초대하였습니다.::"+userJson;
-			broadcast(data);
+			broadcast(JOIN_KEY+messageData+"::"+userJson);
 			this.userList.add(user);
 		}
 	}
@@ -75,7 +74,7 @@ public class Room {
 	public void exitRoom(User user) {
 		synchronized (userList) {
 			this.userList.remove(user);
-			String data = JOIN_KEY + user.getName() + "님이 퇴장하였습니다.";
+			String data = user.getName() + "님이 퇴장하였습니다.";
 			broadcast(data);
 		}
 	}

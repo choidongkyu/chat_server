@@ -31,16 +31,16 @@ public class RoomManager {
 		}
 	}
 
-	public void inviteRoom(String name, String inviteUserId, String fromName, String userJson) {
+	public void inviteRoom(String name, String inviteUserId, String message, String userJson) {
 		synchronized (roomList) {
 			if (!roomList.containsKey(name)) { // 기존에 방이 존재하지 않을때만 room 생성
 				System.out.println("기존 방이 존재하지 않아 룸생성 후 초대");
-				roomList.put(name, new Room(name, inviteUserId, fromName, userJson));
+				roomList.put(name, new Room(name, inviteUserId, message, userJson));
 			} else {
 				System.out.println("기존 방이 존재하므로 룸생성하지 않고 초대 " + inviteUserId);
 				User user = UserManager.getInstance().getUser(inviteUserId);
 				if(user != null) {
-					roomList.get(name).joinRoom(user, fromName, userJson);
+					roomList.get(name).joinRoom(user, message, userJson);
 				}
 			}
 		}

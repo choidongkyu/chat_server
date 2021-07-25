@@ -48,12 +48,12 @@ public class ChatServerProcessThread extends Thread {
 					doQuit(user);
 				} else if ("message".equals(tokens[0])) { // 메시지 예시 - "message::+821026595819,+821093230128::안녕하세요."
 					RoomManager.getInstance().getRoom(tokens[1]).broadcast(tokens[2]);
-				} else if ("invite".equals(tokens[0])) { // 메시지 예시 -"invite::+821026595819,+821093230128,+1555...::+15555215556::최동규::userJson"
+				} else if ("invite".equals(tokens[0])) { // 메시지 예시 -"invite::+821026595819,+821093230128,+1555...::+15555215556::messageData"
 					/**
 					 * tokens[1] - room name
 					 * tokens[2] - 초대될 user id
-					 * tokens[3] - 초대하는 user name
-					 * tokens[4] - 초대될 user 객체
+					 * tokens[3] - messageData
+					 * tokens[4] - user json data
 					 */
 					RoomManager.getInstance().inviteRoom(tokens[1], tokens[2], tokens[3], tokens[4]); // 방 새로 만든 후 초대
 				}
