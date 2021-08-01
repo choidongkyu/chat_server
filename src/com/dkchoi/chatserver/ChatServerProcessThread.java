@@ -68,10 +68,35 @@ public class ChatServerProcessThread extends Thread {
 					
 					User user = UserManager.getInstance().getUser(tokens[3]);
 					if (user != null) {
-						user.getPrintWriter().println("call::" + tokens[1] + "::" + tokens[2]);
+						user.getPrintWriter().println("videoCall::" + tokens[1] + "::" + tokens[2]);
 						user.getPrintWriter().flush();
 					}
-				} else if ("receiveCall".equals(tokens[0])) {
+				} else if ("receiveVideoCall".equals(tokens[0])) {
+					User user = UserManager.getInstance().getUser(tokens[1]);
+					if (user != null) {
+						user.getPrintWriter().println(tokens[0]);
+						user.getPrintWriter().flush();
+					}
+				} else if ("receiveVoiceCall".equals(tokens[0])) {
+					User user = UserManager.getInstance().getUser(tokens[1]);
+					if (user != null) {
+						user.getPrintWriter().println(tokens[0]);
+						user.getPrintWriter().flush();
+					}
+				} else if ("voiceCall".equals(tokens[0])) {
+					
+					/**
+					 * tokens[1] - channel id 
+					 * tokens[2] - user json data 
+					 * tokens[3] - user id
+					 */
+					
+					User user = UserManager.getInstance().getUser(tokens[3]);
+					if (user != null) {
+						user.getPrintWriter().println("voiceCall::" + tokens[1] + "::" + tokens[2]);
+						user.getPrintWriter().flush();
+					}
+				} else if ("rejectCall".equals(tokens[0])) {
 					User user = UserManager.getInstance().getUser(tokens[1]);
 					if (user != null) {
 						user.getPrintWriter().println(tokens[0]);
@@ -104,10 +129,6 @@ public class ChatServerProcessThread extends Thread {
 		running = false; // 쓰레드 종료
 	}
 
-//	private void exitRoom(String roomName) {
-//		Room room = RoomManager.getInstance().getRoom(roomName);
-//		room.exitRoom(user);
-//	}
 
 	private void disconnectClient(User user) {
 		consoleLog("클라이언트로부터 연결 끊김");
