@@ -39,17 +39,28 @@ public class ChatServerProcessThread extends Thread {
 				}
 
 				String[] tokens = request.split("::");
-				if ("join".equals(tokens[0])) { // 앱 진입시 소켓 연결되는 시점
+				
+				switch (tokens[0]) {
+				case "join": // 앱 진입시 소켓 연결되는 시점
 					User user = new User(tokens[1], tokens[2], printWriter); // 들어오는 메시지 예시 - "join::최동규::+821026595819"
 					doJoin(user);
-				} else if ("createRoom".equals(tokens[0])) { // 들어오는 메시지 예시 - "createRoom::+821026595819,+821093230128"
+					break;
+					
+				case "createRoom": // 들어오는 메시지 예시 - "createRoom::+821026595819,+821093230128"
 					RoomManager.getInstance().createRoom(tokens[1]); // 룸생성
-				} else if ("quit".equals(tokens[0])) {
-					doQuit(user);
-				} else if ("message".equals(tokens[0])) { // 메시지 예시 - "message::+821026595819,+821093230128::안녕하세요."
+					break;
+					
+				case "quit":
+					doQuit(this.user);
+					break;
+					
+				case "message": // 들어오는 메시지 예시 - "createRoom::+821026595819,+821093230128"
 					RoomManager.getInstance().getRoom(tokens[1]).broadcast(tokens[2]);
-				} else if ("invite".equals(tokens[0])) { // 메시지 예시
-															// -"invite::+821026595819,+821093230128,+1555...::+15555215556::messageData"
+					break;
+					
+				case "invite": // 들어오는 메시지 예시 -"invite::+821026595819,+821093230128,+1555...::+15555215556::messageData"
+					RoomManager.getInstance().getRoom(tokens[1]).broadcast(tokens[2]);
+					
 					/**
 					 * tokens[1] - room name 
 					 * tokens[2] - 초대될 user id 
@@ -58,7 +69,9 @@ public class ChatServerProcessThread extends Thread {
 					 */
 					
 					RoomManager.getInstance().inviteRoom(tokens[1], tokens[2], tokens[3], tokens[4]); // 방 새로 만든 후 초대
-				} else if ("videoCall".equals(tokens[0])) {
+					break;
+					
+				case "videoCall":
 					
 					/**
 					 * tokens[1] - channel id 
@@ -66,42 +79,53 @@ public class ChatServerProcessThread extends Thread {
 					 * tokens[3] - user id
 					 */
 					
-					User user = UserManager.getInstance().getUser(tokens[3]);
-					if (user != null) {
-						user.getPrintWriter().println("videoCall::" + tokens[1] + "::" + tokens[2]);
-						user.getPrintWriter().flush();
+					User callUser = UserManager.getInstance().getUser(tokens[3]);
+					if (callUser != null) {
+						callUser.getPrintWriter().println("videoCall::" + tokens[1] + "::" + tokens[2]);
+						callUser.getPrintWriter().flush();
 					}
-				} else if ("receiveVideoCall".equals(tokens[0])) {
-					User user = UserManager.getInstance().getUser(tokens[1]);
-					if (user != null) {
-						user.getPrintWriter().println(tokens[0]);
-						user.getPrintWriter().flush();
-					}
-				} else if ("receiveVoiceCall".equals(tokens[0])) {
-					User user = UserManager.getInstance().getUser(tokens[1]);
-					if (user != null) {
-						user.getPrintWriter().println(tokens[0]);
-						user.getPrintWriter().flush();
-					}
-				} else if ("voiceCall".equals(tokens[0])) {
+					break;
 					
+				case "receiveVideoCall":
+					User receiveUser = UserManager.getInstance().getUser(tokens[1]);
+					if (receiveUser != null) {
+						receiveUser.getPrintWriter().println(tokens[0]);
+						receiveUser.getPrintWriter().flush();
+					}
+					break;
+					
+				case "receiveVoiceCall":
+					User recevieVoiceUser = UserManager.getInstance().getUser(tokens[1]);
+					if (recevieVoiceUser != null) {
+						recevieVoiceUser.getPrintWriter().println(tokens[0]);
+						recevieVoiceUser.getPrintWriter().flush();
+					}
+					break;
+					
+				case "voiceCall":
 					/**
 					 * tokens[1] - channel id 
 					 * tokens[2] - user json data 
 					 * tokens[3] - user id
 					 */
 					
-					User user = UserManager.getInstance().getUser(tokens[3]);
-					if (user != null) {
-						user.getPrintWriter().println("voiceCall::" + tokens[1] + "::" + tokens[2]);
-						user.getPrintWriter().flush();
+					User voiceCallUser = UserManager.getInstance().getUser(tokens[3]);
+					if (voiceCallUser != null) {
+						voiceCallUser.getPrintWriter().println("voiceCall::" + tokens[1] + "::" + tokens[2]);
+						voiceCallUser.getPrintWriter().flush();
 					}
-				} else if ("rejectCall".equals(tokens[0])) {
-					User user = UserManager.getInstance().getUser(tokens[1]);
-					if (user != null) {
-						user.getPrintWriter().println(tokens[0]);
-						user.getPrintWriter().flush();
+					break;
+					
+				case "rejectCall":
+					User rejectUser = UserManager.getInstance().getUser(tokens[1]);
+					if (rejectUser != null) {
+						rejectUser.getPrintWriter().println(tokens[0]);
+						rejectUser.getPrintWriter().flush();
 					}
+					break;
+
+				default:
+					break;
 				}
 			}
 		} catch (IOException e) {
